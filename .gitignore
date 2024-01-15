@@ -1,0 +1,17 @@
+.env
+.vscode
+package-lock.json
+*.DS_Store
+*.ttf
+*.zip
+binding.gyp
+locations.cpp
+/node_modules
+/build
+/data
+/emoji
+/forecasts
+/media
+/Release
+/renderings
+/Ubuntu_Mono
