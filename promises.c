@@ -3,9 +3,11 @@
 
 void CompletePromise(napi_env env, napi_status status, void *data)
 {
+  napi_value result;
   PromiseData *promiseData = (PromiseData *)data;
 
-  napi_resolve_deferred(env, promiseData->deferred, NULL);
+  napi_create_int32(env, 1, &result);
+  napi_resolve_deferred(env, promiseData->deferred, result);
 
   //Begin all important cleanup.
   napi_delete_async_work(env, promiseData->work);
