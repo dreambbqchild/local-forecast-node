@@ -5,7 +5,6 @@
   "main": "index.js",
   "private": true,
   "dependencies": {
-    "bindings": "~1.2.1",
     "dotenv": "^16.3.1",
     "node-gyp": "^10.0.1"
   },
