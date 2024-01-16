@@ -1,6 +1,6 @@
+#include "promises.h"
+
 #include <assert.h>
-#include <LocalForecastLib.h>
-#include <node_api.h>
 #include <stdbool.h> 
 #include <stdlib.h>
 
@@ -38,53 +38,59 @@ static bool LoadArgumentsWithValidation(napi_env env, napi_callback_info info, s
   return true;
 }
 
-bool ProcessHRRRForecasts(napi_env env, napi_callback_info info, enum RenderTargets renderTargets, bool useCache)
+static void RenderLocalForecastCallback(napi_env env, void *data)
+{
+  PromiseData* promiseData = (PromiseData*)data;
+  if(promiseData->useCache)
+    LocalForecastLibRenderCahcedLocalForecast(promiseData->gribFilePath, promiseData->forecastFilePath, promiseData->renderTargets);
+  else
+    LocalForecastLibRenderLocalForecast(HRRRWxModel, promiseData->gribFilePath, promiseData->forecastFilePath, promiseData->renderTargets, 1, 48);
+}
+
+static void RenderRegionalForecastCallback(napi_env env, void* data) 
+{  
+  LocalForecastLibRenderRegionalForecast();
+}
+
+static napi_value ProcessHRRRForecasts(napi_env env, napi_callback_info info, const char* name, enum RenderTargets renderTargets, bool useCache)
 {  
   napi_value args[2] = {0};
   napi_valuetype types[] = { napi_string, napi_string };
   if(!LoadArgumentsWithValidation(env, info, 2, (napi_value*)args, (napi_valuetype*)types))
-    return false;
+    return CreateRejectPromise(env, "Needs 2 parameters, and they must be strings.");
 
-  char* gribFilePath = ReadUTF8String(env, args[0]);
-  char* forecastFilePath = ReadUTF8String(env, args[1]);
+  PromiseData* promiseData = (PromiseData*)calloc(1, sizeof(PromiseData));
+  promiseData->useCache = useCache;
+  promiseData->renderTargets = renderTargets;
 
-  if(useCache)
-    LocalForecastLibRenderCahcedLocalForecast(gribFilePath, forecastFilePath, renderTargets);
-  else
-    LocalForecastLibRenderLocalForecast(HRRRWxModel, gribFilePath, forecastFilePath, renderTargets, 1, 48);
+  promiseData->gribFilePath = ReadUTF8String(env, args[0]);
+  promiseData->forecastFilePath = ReadUTF8String(env, args[1]);
 
-  free(gribFilePath);
-  free(forecastFilePath);
-
-  return true;
+  return CreatePromise(env, name, promiseData, RenderLocalForecastCallback);
 }
 
 //Renders the Regional forecast for right now.
 static napi_value RenderRegionalForecast(napi_env env, napi_callback_info info) 
 {  
-  LocalForecastLibRenderRegionalForecast();
-  return NULL;
+  return CreatePromise(env, "RenderRegionalForecast", (PromiseData*)calloc(1, sizeof(PromiseData)), RenderRegionalForecastCallback);
 }
 
 //Does the time consuming work: Downloading the GRIB file and rendering the weather maps.
 static napi_value PreprocessHRRRForCurrentValidPeriod(napi_env env, napi_callback_info info)
 {
-  ProcessHRRRForecasts(env, info, WeatherMapsRenderTarget, false);
-  return NULL;
+  return ProcessHRRRForecasts(env, info, "PreprocessHRRRForCurrentValidPeriod", WeatherMapsRenderTarget, false);
 }
 
 //Uses the GRIBs and WeatherMap pngs cached locally at the supplied location to render the forecast for now.
 static napi_value RenderPreprocessedHRRRForNow(napi_env env, napi_callback_info info)
 {
-  ProcessHRRRForecasts(env, info, RegionalForecastRenderTarget | PersonalForecastsRenderTarget | TextForecastRenderTarget | VideoRenderTarget, true);
-  return NULL;
+  return ProcessHRRRForecasts(env, info, "RenderPreprocessedHRRRForNow", RegionalForecastRenderTarget | PersonalForecastsRenderTarget | TextForecastRenderTarget | VideoRenderTarget, true);
 }
 
 //Renders EVERYTHING.
 static napi_value RenderFullLocalHRRRForecast(napi_env env, napi_callback_info info) 
 { 
-  ProcessHRRRForecasts(env, info, AllRenderTargets, false);
-  return NULL;
+  return ProcessHRRRForecasts(env, info, "RenderFullLocalHRRRForecast", AllRenderTargets, false);
 }
 
 static napi_value Init(napi_env env, napi_value exports) {

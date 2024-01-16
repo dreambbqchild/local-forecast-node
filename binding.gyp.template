@@ -5,7 +5,7 @@ The "documentation" here assumes the release build of local-forecast is in a fol
       "target_name": "local-forecast-node",
       "include_dirs": ["$REPLACE_WITH_PATH_TO_LOCAL_FORECAST/src/"],
       "libraries": [ "-L$REPLACE_WITH_PATH_TO_LOCAL_FORECAST/Release", "-Wl,-rpath,$REPLACE_WITH_PATH_TO_LOCAL_FORECAST/Release", "-llocalforecast" ],
-      "sources": [ "lib.c" ]
+      "sources": [ "lib.c", "promises.c" ]
     }
   ]
 }
