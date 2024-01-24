@@ -6,6 +6,7 @@ package-lock.json
 *.zip
 binding.gyp
 locations.cpp
+settings.json
 /node_modules
 /build
 /data

@@ -1,27 +1,54 @@
 #include "promises.h"
 #include <stdlib.h>
+#include <string.h>
+
+inline void AddStringPropertyToObject(napi_env env, const char* rawString, const char* propertyName, napi_value obj)
+{
+  if(!rawString)
+    return;
+  
+  napi_value strValue = NULL;
+  napi_create_string_utf8(env, rawString, strlen(rawString), &strValue);
+  napi_set_named_property(env, obj, propertyName, strValue);
+}
 
 void CompletePromise(napi_env env, napi_status status, void *data)
 {
   napi_value result;
   PromiseData *promiseData = (PromiseData *)data;
 
-  napi_create_int32(env, 1, &result);
+  napi_create_object(env, &result);
+  AddStringPropertyToObject(env, promiseData->regionalImageFilePath, "regionalForecast", result);
+  AddStringPropertyToObject(env, promiseData->videoFilePath, "video", result);  
+  AddStringPropertyToObject(env, promiseData->textFilePath, "text", result);  
+
   napi_resolve_deferred(env, promiseData->deferred, result);
 
   //Begin all important cleanup.
   napi_delete_async_work(env, promiseData->work);
   
-  if(promiseData->gribFilePath)
+  if(promiseData->locationKey)
   {
-    free(promiseData->gribFilePath);
-    promiseData->gribFilePath = NULL;
+    free(promiseData->locationKey);
+    promiseData->locationKey = NULL;
+  }
+
+  if(promiseData->regionalImageFilePath)
+  {
+    free(promiseData->regionalImageFilePath);
+    promiseData->regionalImageFilePath = NULL;
+  }
+
+  if(promiseData->videoFilePath)
+  {
+    free(promiseData->videoFilePath);
+    promiseData->videoFilePath = NULL;
   }
   
-  if(promiseData->forecastFilePath)
+  if(promiseData->textFilePath)
   {
-    free(promiseData->forecastFilePath);
-    promiseData->forecastFilePath = NULL;
+    free(promiseData->textFilePath);
+    promiseData->textFilePath = NULL;
   }
 
   free(promiseData);

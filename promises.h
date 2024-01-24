@@ -4,10 +4,19 @@
 #include <LocalForecastLib.h>
 #include <node_api.h>
 
+enum PromiseType {
+  RegionalForecastPromiseType,
+  HRRRForecastPromiseType,
+  CachedHRRRForecastPromiseType
+};
+
 typedef struct {
-  bool useCache;
+  enum PromiseType promiseType;
   enum RenderTargets renderTargets;
-  char* gribFilePath, *forecastFilePath;
+  char* locationKey, 
+      * regionalImageFilePath,
+      * videoFilePath, 
+      * textFilePath;
 
   napi_async_work work;
   napi_deferred deferred;

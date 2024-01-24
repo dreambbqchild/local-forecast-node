@@ -2,6 +2,8 @@ require('dotenv').config(); //Set OPENWEATHERMAP_APPID to your OpenWeatherMap Ap
 var localForeast = require('./build/Release/local-forecast-node');
 
 (async () => {
-    await localForeast.renderRegionalForecast();
-    console.log('something');
+    //console.log(await localForeast.renderRegionalForecast("t-c"));
+    console.log(await localForeast.preprocessHRRRForCurrentValidPeriod("t-c"));
+    console.log(await localForeast.renderPreprocessedHRRRForNow("t-c"));
+    console.log(await localForeast.renderFullLocalHRRRForecast("t-c"));
 })();
