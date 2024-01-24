@@ -44,9 +44,9 @@ static void RenderLocalForecastCallback(napi_env env, void *data)
   PromiseData* promiseData = (PromiseData*)data;
   switch(promiseData->promiseType)
   {
-    case RegionalForecastPromiseType: LocalForecastLibRenderRegionalForecast(promiseData->locationKey, &promiseData->regionalImageFilePath); return;
-    case HRRRForecastPromiseType: LocalForecastLibRenderLocalForecast(promiseData->locationKey, HRRRWxModel, promiseData->renderTargets, 1, 48, &promiseData->videoFilePath, &promiseData->textFilePath); return;
-    case CachedHRRRForecastPromiseType: LocalForecastLibRenderCahcedLocalForecast(promiseData->locationKey, HRRRWxModel, promiseData->renderTargets, &promiseData->videoFilePath, &promiseData->textFilePath); return;    
+    case RegionalForecastPromiseType: LocalForecastLibRenderRegionalForecast(promiseData->locationKey, &promiseData->regionalImagePath); return;
+    case HRRRForecastPromiseType: LocalForecastLibRenderLocalForecast(promiseData->locationKey, HRRRWxModel, promiseData->renderTargets, 1, 48, &promiseData->videoPath, &promiseData->textPath); return;
+    case CachedHRRRForecastPromiseType: LocalForecastLibRenderCahcedLocalForecast(promiseData->locationKey, HRRRWxModel, promiseData->renderTargets, &promiseData->videoPath, &promiseData->textPath); return;    
     default:
       fputs("Unknown Promise Type\n", stderr);
   }    

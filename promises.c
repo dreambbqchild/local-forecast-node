@@ -18,9 +18,9 @@ void CompletePromise(napi_env env, napi_status status, void *data)
   PromiseData *promiseData = (PromiseData *)data;
 
   napi_create_object(env, &result);
-  AddStringPropertyToObject(env, promiseData->regionalImageFilePath, "regionalForecast", result);
-  AddStringPropertyToObject(env, promiseData->videoFilePath, "video", result);  
-  AddStringPropertyToObject(env, promiseData->textFilePath, "text", result);  
+  AddStringPropertyToObject(env, promiseData->regionalImagePath, "regionalForecastPath", result);
+  AddStringPropertyToObject(env, promiseData->videoPath, "videoPath", result);  
+  AddStringPropertyToObject(env, promiseData->textPath, "textPath", result);  
 
   napi_resolve_deferred(env, promiseData->deferred, result);
 
@@ -33,22 +33,22 @@ void CompletePromise(napi_env env, napi_status status, void *data)
     promiseData->locationKey = NULL;
   }
 
-  if(promiseData->regionalImageFilePath)
+  if(promiseData->regionalImagePath)
   {
-    free(promiseData->regionalImageFilePath);
-    promiseData->regionalImageFilePath = NULL;
+    free(promiseData->regionalImagePath);
+    promiseData->regionalImagePath = NULL;
   }
 
-  if(promiseData->videoFilePath)
+  if(promiseData->videoPath)
   {
-    free(promiseData->videoFilePath);
-    promiseData->videoFilePath = NULL;
+    free(promiseData->videoPath);
+    promiseData->videoPath = NULL;
   }
   
-  if(promiseData->textFilePath)
+  if(promiseData->textPath)
   {
-    free(promiseData->textFilePath);
-    promiseData->textFilePath = NULL;
+    free(promiseData->textPath);
+    promiseData->textPath = NULL;
   }
 
   free(promiseData);

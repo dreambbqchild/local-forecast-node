@@ -14,9 +14,9 @@ typedef struct {
   enum PromiseType promiseType;
   enum RenderTargets renderTargets;
   char* locationKey, 
-      * regionalImageFilePath,
-      * videoFilePath, 
-      * textFilePath;
+      * regionalImagePath,
+      * videoPath, 
+      * textPath;
 
   napi_async_work work;
   napi_deferred deferred;
