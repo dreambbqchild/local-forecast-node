@@ -1,6 +1,5 @@
 #include "promises.h"
 #include <stdlib.h>
-#include <string.h>
 
 inline void AddStringPropertyToObject(napi_env env, const char* rawString, const char* propertyName, napi_value obj)
 {
@@ -8,7 +7,7 @@ inline void AddStringPropertyToObject(napi_env env, const char* rawString, const
     return;
   
   napi_value strValue = NULL;
-  napi_create_string_utf8(env, rawString, strlen(rawString), &strValue);
+  napi_create_string_utf8(env, rawString, NAPI_AUTO_LENGTH, &strValue);
   napi_set_named_property(env, obj, propertyName, strValue);
 }
 
@@ -60,7 +59,7 @@ napi_value CreatePromise(napi_env env, const char* name, PromiseData* promiseDat
   napi_value promiseName;
 
   napi_create_promise(env, &promiseData->deferred, &promise);
-  napi_create_string_utf8(env, name, -1, &promiseName);
+  napi_create_string_utf8(env, name, NAPI_AUTO_LENGTH, &promiseName);
   napi_create_async_work(env, NULL, promiseName, executeCallback, CompletePromise, (void*)promiseData, &promiseData->work);
   napi_queue_async_work(env, promiseData->work);
   return promise;
