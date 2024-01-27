@@ -11,6 +11,15 @@ inline void AddStringPropertyToObject(napi_env env, const char* rawString, const
   napi_set_named_property(env, obj, propertyName, strValue);
 }
 
+inline void SafeFree(char** ppcStr)
+{
+  if(*ppcStr)
+  {
+    free(*ppcStr);
+    *ppcStr = NULL;
+  }
+}
+
 void CompletePromise(napi_env env, napi_status status, void *data)
 {
   napi_value result;
@@ -26,29 +35,10 @@ void CompletePromise(napi_env env, napi_status status, void *data)
   //Begin all important cleanup.
   napi_delete_async_work(env, promiseData->work);
   
-  if(promiseData->locationKey)
-  {
-    free(promiseData->locationKey);
-    promiseData->locationKey = NULL;
-  }
-
-  if(promiseData->regionalImagePath)
-  {
-    free(promiseData->regionalImagePath);
-    promiseData->regionalImagePath = NULL;
-  }
-
-  if(promiseData->videoPath)
-  {
-    free(promiseData->videoPath);
-    promiseData->videoPath = NULL;
-  }
-  
-  if(promiseData->textPath)
-  {
-    free(promiseData->textPath);
-    promiseData->textPath = NULL;
-  }
+  SafeFree(&promiseData->locationKey);
+  SafeFree(&promiseData->regionalImagePath);
+  SafeFree(&promiseData->videoPath);
+  SafeFree(&promiseData->textPath);
 
   free(promiseData);
 }
